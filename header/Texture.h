@@ -50,6 +50,9 @@ public:
   [[nodiscard]] inline SDL_Point get_center() const {
     return center_;
   }
+  [[nodiscard]] inline SDL_Point get_size() const {
+    return size_;
+  }
 
   void Render();
   void RenderAt(int x, int y);

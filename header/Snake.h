@@ -26,16 +26,18 @@ class Snake {
   Texture body_, head_;
   Direction direction_;
 
-  Uint32 length_;
   Uint64 delay_;
   bool rotate_;
   std::vector<Element> elements_;
+
+  Mix_Chunk *dying_,
+            *eating_;
 
   void IncreaseSize();
 
 public:
   explicit Snake(Game *game);
-  ~Snake() = default;
+  ~Snake();
 
   inline void set_direction(Direction dir) {
     if (
@@ -71,7 +73,7 @@ public:
   void Render();
 
   [[nodiscard]] Uint32 get_length() const {
-    return length_;
+    return elements_.size();
   }
 };
 

@@ -20,22 +20,31 @@ class Game {
           food_,
           score_;
   SDL_Point food_pos;
-  bool pause_;
+  bool pause_,
+          game_over_;
+
+  Uint32 highscore_;
+  std::fstream filestream_;
+
+  Mix_Music *soundtrack_;
 
   inline void Restart() {
     snake_ = new Snake(this);
     RegenFood();
     RenderScore();
     pause_ = false;
+    game_over_ = false;
   }
   void ToggleStop() {
-    pause_ = !pause_;
+    if (!game_over_) {
+      pause_ = !pause_;
 
-    if (pause_) {
-      SDL_Surface *surf = TTF_RenderText_Blended(font_, "Paused", font_color_);
-      score_.set_texture(&surf);
-    } else {
-      RenderScore();
+      if (pause_) {
+        SDL_Surface *surf = TTF_RenderText_Blended(font_, "Paused", font_color_);
+        score_.set_texture(&surf);
+      } else {
+        RenderScore();
+      }
     }
   }
 public:
@@ -45,7 +54,10 @@ public:
   ~Game();
 
   inline void RenderScore() {
-    SDL_Surface *surf = TTF_RenderText_Blended(font_, fmt::format("Score: {}", snake_->get_length() + 1).c_str(), font_color_);
+    int max_length = 0;
+    TTF_SizeText(font_, "Highscore: .....", &max_length, nullptr);
+
+    SDL_Surface *surf = TTF_RenderText_Blended_Wrapped(font_, fmt::format("Score: {}\nHighscore: {}", snake_->get_length(), highscore_).c_str(), font_color_, max_length);
     score_.set_texture(&surf);
   }
   inline void RegenFood() {
@@ -60,7 +72,7 @@ public:
     return food_pos;
   }
 
-  static void EndGame();
+  void EndGame();
 
   void HandleEvent(SDL_Event *evt);
   void Tick(Uint64 ms);

@@ -1,18 +1,18 @@
-#include "pch.h"
 #include "Game.h"
 #include "misc.h"
+#include "pch.h"
 
 SDL_Window *g_window = nullptr;
 SDL_Renderer *g_renderer = nullptr;
 
 int main(int argc, char **argv) {
   atexit(
-          [](){
+          []() {
             SDL_Quit();
             TTF_Quit();
             IMG_Quit();
-          }
-  );
+            Mix_Quit();
+          });
 
   std::srand(time(nullptr));
 
@@ -25,6 +25,10 @@ int main(int argc, char **argv) {
   if (IMG_Init(IMG_INIT_PNG) == 0) {
     OnError(fmt::format("Error whilst initialising IMG: \"{}\"", IMG_GetError()));
   }
+  Mix_Init(MIX_INIT_FLAC |
+           MIX_INIT_MOD |
+           MIX_INIT_MP3 |
+           MIX_INIT_OGG);
 
   g_window = SDL_CreateWindow("Snake", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_SIZE_X, WINDOW_SIZE_Y, SDL_WINDOW_RESIZABLE);
   if (!g_window) {
