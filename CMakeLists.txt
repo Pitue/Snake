@@ -3,7 +3,12 @@ project(Snake)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Snake)
+if (WIN32)
+       add_executable(Snake)
+else()
+       add_executable(Snake WIN32)
+endif()
+
 
 target_sources(
         ${PROJECT_NAME}
@@ -39,6 +44,10 @@ target_precompile_headers(
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
         add_compile_definitions(_DEBUG)
+
+else()
+
+
 endif()
 
 find_package(SDL2 CONFIG REQUIRED)
