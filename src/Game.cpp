@@ -97,7 +97,7 @@ void Game::HandleEvent(SDL_Event *evt) {
       ToggleStop();
       break;
 
-#ifndef NDEBUG
+#ifdef _DEBUG
     case SDLK_t:
       RegenFood();
       break;

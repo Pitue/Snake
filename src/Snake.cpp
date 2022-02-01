@@ -47,37 +47,36 @@ void Snake::Tick(Uint64 time) {
   if ((delay_ += time) >= SPEED) {
     delay_ -= SPEED;
 
-    for (Uint32 i = elements_.size(); i > 0; --i) {
-      elements_[i] = elements_[i - 1];
-    }
+    Element n_pos{elements_[0]};
     switch (direction_) {
       case Direction::UP:
-        elements_[0].y -= 1;
+        n_pos.y -= 1;
         break;
       case Direction::RIGHT:
-        elements_[0].x += 1;
+        n_pos.x += 1;
         break;
       case Direction::LEFT:
-        elements_[0].x -= 1;
+        n_pos.x -= 1;
         break;
       case Direction::DOWN:
-        elements_[0].y += 1;
+        n_pos.y += 1;
         break;
     }
     rotate_ = false;
 
     //Interaction
-    if (elements_[0].x < 0 || elements_[0].x >= FIELD_SIZE_REL ||
-        elements_[0].y < 0 || elements_[0].y >= FIELD_SIZE_REL) {
+    if (n_pos.x < 0 || n_pos.x >= FIELD_SIZE_REL ||
+        n_pos.y < 0 || n_pos.y >= FIELD_SIZE_REL) {
 #ifdef _DEBUG
-      std::cout << fmt::format("Crossed border! Pos: {} | {}\n", elements_[0].x, elements_[0].y);
+      std::cout << fmt::format("Crossed border! Pos: {} | {}\n", n_pos.x, n_pos.y);
 #endif
 
       Mix_PlayChannel(-1, dying_, 0);
       game_->EndGame();
+      return;
     }
 
-    if (elements_[0].x == game_->get_food_pos().x && elements_[0].y == game_->get_food_pos().y) {
+    if (n_pos.x == game_->get_food_pos().x && n_pos.y == game_->get_food_pos().y) {
       Mix_PlayChannel(-1, eating_, 0);
       IncreaseSize();
       game_->RegenFood();
@@ -85,12 +84,18 @@ void Snake::Tick(Uint64 time) {
     }
 
     for (size_t i = 1; i < elements_.size(); ++i) {
-      if (elements_[0] == elements_[i]) {
+      if (n_pos == elements_[i]) {
         Mix_PlayChannel(-1, dying_, 0);
         game_->EndGame();
+        return;
       }
     }
     //Interaction
+
+    for (Uint32 i = elements_.size(); i > 0; --i) {
+      elements_[i] = elements_[i - 1];
+    }
+    elements_[0] = n_pos;
   }
 }
 void Snake::Render() {

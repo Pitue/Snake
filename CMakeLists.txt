@@ -19,6 +19,8 @@ target_sources(
         src/Texture.cpp
         src/misc.cpp
         src/Game.cpp
+
+        resource/snake.rc
         )
 
 target_include_directories(

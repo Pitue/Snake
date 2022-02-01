@@ -26,15 +26,16 @@ bool IsDecreasing(Direction d);
 #define FIELD_SIZE_REL 30
 
 #define FONT_FILE "./resource/arial.ttf"
-#define FIELD_FILE "./resource/rwe.png"
-#define SNAKE_HEAD_FILE "./resource/snake_heasd.png"
+
+#define FIELD_FILE "./resource/field.png"
+#define SNAKE_HEAD_FILE "./resource/snake_head.png"
 #define SNAKE_FILE "./resource/snake.png"
 #define FOOD_FILE "./resource/food.png"
 
 #define MUSIC_FILE "./resource/music.mp3"
 
 #define SFX_EATING_FILE "./resource/food.mp3"
-#define SFX_DYING_FILE "./resource/died.wav"
+#define SFX_DYING_FILE "./resource/died.mp3"
 
 
 struct Position {

@@ -14,8 +14,6 @@ int main(int argc, char **argv) {
             Mix_Quit();
           });
 
-  std::srand(time(nullptr));
-
   if (SDL_Init(SDL_INIT_EVERYTHING)) {
     OnError(fmt::format("Error whilst initialising: \"{}\"", SDL_GetError()));
   }
