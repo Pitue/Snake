@@ -4,9 +4,9 @@ project(Snake)
 set(CMAKE_CXX_STANDARD 17)
 
 if (WIN32)
-       add_executable(Snake)
-else()
        add_executable(Snake WIN32)
+else()
+       add_executable(Snake)
 endif()
 
 
