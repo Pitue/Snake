@@ -94,7 +94,7 @@ void Game::RenderPowerupText(Uint64 time_left) {
   int max_size = 0;
   if (powerup_) {
     TTF_SizeText(font_, "Powerup activated!", &max_size, nullptr);
-    SDL_Surface *surf = TTF_RenderText_Blended_Wrapped(font_, fmt::format("Powerup activated!\nTime left: {}s", (double)time_left / 100.0).c_str(), font_color_, max_size);
+    SDL_Surface *surf = TTF_RenderText_Blended_Wrapped(font_, fmt::format("Powerup activated!\nTime left: {}s", AS_SECONDS(time_left)).c_str(), font_color_, max_size);
     powerup_text_.set_texture(&surf);
 
 #ifdef _DEBUG

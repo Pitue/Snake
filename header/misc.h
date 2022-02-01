@@ -23,7 +23,16 @@ bool IsDecreasing(Direction d);
 #define TILE_SIZE 20
 
 #define SPEED (Uint64)80
+
+#ifdef WIN32
+#define POWERUP_TIME (Uint64)5000
+#define AS_SECONDS(x) ((double)x / 1000.0)
+#else
 #define POWERUP_TIME (Uint64)500
+#define AS_SECONDS(x) ((double)x / 100.0)
+#endif
+
+
 #define FIELD_SIZE_REL 30
 
 #define FONT_FILE "./resource/arial.ttf"
