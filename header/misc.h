@@ -29,7 +29,7 @@ bool IsDecreasing(Direction d);
 #define AS_SECONDS(x) ((double)x / 1000.0)
 #else
 #define POWERUP_TIME (Uint64)500
-#define AS_SECONDS(x) ((double)x / 100.0)
+#define AS_SECONDS(x) ((double)(x) / 100.0)
 #endif
 
 

@@ -116,12 +116,10 @@ void Snake::Tick(Uint64 time) {
       }
     }
 
-    for (size_t i = 1; i < elements_.size(); ++i) {
-      if (n_pos == elements_[i]) {
-        Mix_PlayChannel(-1, dying_, 0);
-        game_->EndGame();
-        return;
-      }
+    if (std::find(elements_.begin() + 1, elements_.end(), n_pos) != elements_.end()) {
+      Mix_PlayChannel(-1, dying_, 0);
+      game_->EndGame();
+      return;
     }
     //Interaction
 

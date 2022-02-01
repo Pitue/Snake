@@ -71,7 +71,7 @@ public:
   }
 
   inline bool CheckPosition(SDL_Point pos) {
-    return std::find(elements_.begin(), elements_.end(), Element(pos.x, pos.y)) == elements_.end();
+    return std::find(elements_.begin(), elements_.end(), Element(pos.x, pos.y), ) == elements_.end();
   }
 
   void Tick(size_t time);
