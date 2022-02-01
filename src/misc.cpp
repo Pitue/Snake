@@ -22,3 +22,10 @@ bool IsIncreasing(Direction d) {
 bool IsDecreasing(Direction d) {
   return d == Direction::LEFT || d == Direction::UP;
 }
+
+Mix_Chunk *LoadSFX(const char *file) {
+  Mix_Chunk *temp = Mix_LoadWAV(file);
+  if (!temp)
+    OnError(fmt::format("Couldn't load file \"{}\": {}", file, Mix_GetError()).c_str());
+  return temp;
+}

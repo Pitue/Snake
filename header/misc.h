@@ -23,6 +23,7 @@ bool IsDecreasing(Direction d);
 #define TILE_SIZE 20
 
 #define SPEED (Uint64)80
+#define POWERUP_TIME (Uint64)500
 #define FIELD_SIZE_REL 30
 
 #define FONT_FILE "./resource/arial.ttf"
@@ -32,14 +33,16 @@ bool IsDecreasing(Direction d);
 #define SNAKE_FILE "./resource/snake.png"
 #define FOOD_FILE "./resource/food.png"
 
-#define MUSIC_FILE "./resource/music.mp3"
-
 #define SFX_EATING_FILE "./resource/food.mp3"
 #define SFX_DYING_FILE "./resource/died.mp3"
+#define SFX_POWERUP_ON_FILE "./resource/powerup_on.mp3"
+#define SFX_POWERUP_OFF_FILE "./resource/powerup_off.mp3"
 
 
 struct Position {
   double x, y;
 };
+
+Mix_Chunk *LoadSFX(const char *file);
 
 #endif//SNAKE_MISC_H

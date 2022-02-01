@@ -5,6 +5,27 @@
 #include "pch.h"
 #include "Game.h"
 
+void Game::Restart() {
+  snake_ = new Snake(this);
+  RegenFood();
+  RenderScore();
+  pause_ = false;
+  game_over_ = false;
+  set_powerup(false);
+}
+void Game::ToggleStop() {
+  if (!game_over_) {
+    pause_ = !pause_;
+
+    if (pause_) {
+      SDL_Surface *surf = TTF_RenderText_Blended(font_, "Paused", font_color_);
+      score_.set_texture(&surf);
+    } else {
+      RenderScore();
+    }
+  }
+}
+
 Game::Game(SDL_Renderer *renderer)
   : font_{TTF_OpenFont(FONT_FILE, 24)}
   , snake_{nullptr}
@@ -17,7 +38,8 @@ Game::Game(SDL_Renderer *renderer)
   , pause_{false}
   , game_over_{false}
   , highscore_{0}
-  , soundtrack_{nullptr} {
+  , powerup_{false}
+  , powerup_text_(renderer){
   food_.set_center(0, 0);
   food_.set_size(TILE_SIZE, TILE_SIZE);
 
@@ -42,11 +64,6 @@ Game::Game(SDL_Renderer *renderer)
     filestream_.close();
   }
 
-  soundtrack_ = Mix_LoadMUS(MUSIC_FILE);
-  if (!soundtrack_)
-    OnError(fmt::format("Couldn't load file \"{}\": {}", MUSIC_FILE, Mix_GetError()));
-  Mix_PlayMusic(soundtrack_, -1);
-
   Restart();
 }
 Game::~Game() {
@@ -56,6 +73,46 @@ Game::~Game() {
   filestream_.open("./resource/highscore", std::ios::out | std::ios::trunc);
   filestream_ << highscore_ << "\n";
   filestream_.close();
+}
+
+void Game::RenderScore() {
+  int max_length = 0;
+  TTF_SizeText(font_, "Highscore: .....", &max_length, nullptr);
+
+  SDL_Surface *surf = TTF_RenderText_Blended_Wrapped(font_, fmt::format("Score: {}\nHighscore: {}", snake_->get_length(), highscore_).c_str(), font_color_, max_length);
+  score_.set_texture(&surf);
+}
+void Game::RegenFood() {
+  SDL_Point pos{0,0};
+  do {
+    pos.x = static_cast<int>(prng_() % FIELD_SIZE_REL);
+    pos.y = static_cast<int>(prng_() % FIELD_SIZE_REL);
+  } while (!snake_->CheckPosition(pos));
+  food_pos = pos;
+}
+void Game::RenderPowerupText(Uint64 time_left) {
+  int max_size = 0;
+  if (powerup_) {
+    TTF_SizeText(font_, "Powerup activated!", &max_size, nullptr);
+    SDL_Surface *surf = TTF_RenderText_Blended_Wrapped(font_, fmt::format("Powerup activated!\nTime left: {}s", (double)time_left / 100.0).c_str(), font_color_, max_size);
+    powerup_text_.set_texture(&surf);
+
+#ifdef _DEBUG
+    std::cout << "Called with " << time_left << " ticks\n";
+#endif
+  } else {
+    powerup_text_.set_texture((SDL_Texture*)nullptr);
+  }
+}
+void Game::set_powerup(bool val) {
+  powerup_ = val;
+#ifdef _DEBUG
+  if (powerup_)
+    std::cout << "Powerup started!\n";
+  else
+    std::cout << "Powerup ended!\n";
+#endif
+  RenderPowerupText(POWERUP_TIME);
 }
 
 void Game::EndGame() {
@@ -68,6 +125,8 @@ void Game::EndGame() {
 
   if (snake_->get_length() > highscore_)
     highscore_ = snake_->get_length();
+
+  set_powerup(false);
 }
 
 void Game::HandleEvent(SDL_Event *evt) {
@@ -124,4 +183,6 @@ void Game::Render() {
     score_.Render();
   else
     score_.RenderAt(WINDOW_SIZE_X / 2 - score_.get_size().x, WINDOW_SIZE_Y / 2 - score_.get_size().y);
+
+  powerup_text_.RenderAt(WINDOW_SIZE_X - powerup_text_.get_size().x, 0);
 }

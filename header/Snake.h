@@ -31,7 +31,12 @@ class Snake {
   std::vector<Element> elements_;
 
   Mix_Chunk *dying_,
-            *eating_;
+            *eating_,
+            *powerup_on_,
+            *powerup_off_;
+
+  bool powerup_;
+  Uint64 powerup_left_ticks_;
 
   void IncreaseSize();
 
@@ -50,16 +55,16 @@ public:
     direction_ = dir;
     switch (dir) {
       case Direction::UP:
-        head_.set_rotation(180.0);
+        head_.set_rotation(0.0);
         break;
       case Direction::RIGHT:
-        head_.set_rotation(270.0);
-        break;
-      case Direction::LEFT:
         head_.set_rotation(90.0);
         break;
+      case Direction::LEFT:
+        head_.set_rotation(270.0);
+        break;
       case Direction::DOWN:
-        head_.set_rotation(0.0);
+        head_.set_rotation(180.0);
         break;
     }
     rotate_ = true;
