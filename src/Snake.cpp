@@ -45,6 +45,10 @@ Snake::~Snake() {
 }
 
 void Snake::Tick(Uint64 time) {
+#ifdef _DEBUG
+  std::cout << "Ticks passed: " << time << "\n";
+#endif
+
   if ((delay_ += time) >= SPEED) {
     if (powerup_) {
       if (time > powerup_left_ticks_) {
