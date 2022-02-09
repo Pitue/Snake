@@ -21,17 +21,11 @@ bool IsDecreasing(Direction d);
 #define WINDOW_SIZE_X 600
 #define WINDOW_SIZE_Y WINDOW_SIZE_X
 #define TILE_SIZE 20
+#define BORDER_SIZE
 
-#define SPEED (Uint64)80
-
-#ifdef WIN32
-#define POWERUP_TIME (Uint64)5000
-#define AS_SECONDS(x) ((double)x / 1000.0)
-#else
 #define POWERUP_TIME (Uint64)500
 #define AS_SECONDS(x) ((double)(x) / 100.0)
-#endif
-
+#define SPEED (Uint64)80
 
 #define FIELD_SIZE_REL 30
 
@@ -47,6 +41,7 @@ bool IsDecreasing(Direction d);
 #define SFX_POWERUP_ON_FILE "./resource/powerup_on.mp3"
 #define SFX_POWERUP_OFF_FILE "./resource/powerup_off.mp3"
 
+#define ICON_FILE "./resource/icon.png"
 
 struct Position {
   double x, y;

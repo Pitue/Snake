@@ -23,10 +23,11 @@ int main(int argc, char **argv) {
   if (IMG_Init(IMG_INIT_PNG) == 0) {
     OnError(fmt::format("Error whilst initialising IMG: \"{}\"", IMG_GetError()));
   }
-  Mix_Init(MIX_INIT_FLAC |
-           MIX_INIT_MOD |
-           MIX_INIT_MP3 |
-           MIX_INIT_OGG);
+
+  int flags = MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_MP3 | MIX_INIT_OGG;
+  if (Mix_Init(flags) != flags) {
+    OnError(fmt::format("Error whilst initialising Mix: \"{}\"", Mix_GetError()));
+  }
 
   g_window = SDL_CreateWindow("Snake", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_SIZE_X, WINDOW_SIZE_Y, SDL_WINDOW_RESIZABLE);
   if (!g_window) {
@@ -37,14 +38,15 @@ int main(int argc, char **argv) {
   if (!g_renderer) {
     OnError(fmt::format("Error whilst creating renderer: \"{}\"", SDL_GetError()));
   }
+  SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
   SDL_SetRenderDrawBlendMode(g_renderer, SDL_BlendMode::SDL_BLENDMODE_BLEND);
   SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
   SDL_RenderSetLogicalSize(g_renderer, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
-  SDL_Surface *icon = IMG_Load("./resource/icon.png");
+  SDL_Surface *icon = IMG_Load(ICON_FILE);
 
   if (!icon)
-    OnError(fmt::format("Couldn't load texture \"{}\".", "./resource/icon.png"));
+    OnError(fmt::format("Couldn't load texture \"{}\".", ICON_FILE));
 
   SDL_SetWindowIcon(g_window, icon);
   SDL_FreeSurface(icon);

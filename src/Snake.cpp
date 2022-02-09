@@ -2,27 +2,16 @@
 // Created by marc on 28.01.22.
 //
 
-#include "pch.h"
 #include "Snake.h"
 #include "Game.h"
+#include "pch.h"
 
 void Snake::IncreaseSize() {
   elements_.emplace_back(elements_.back());
 }
 
 Snake::Snake(Game *game)
-  : body_(game->renderer_, SNAKE_FILE)
-  , head_(game->renderer_, SNAKE_HEAD_FILE)
-  , game_{game}
-  , direction_{Direction::RIGHT}
-  , delay_{0}
-  , rotate_{false}
-  , eating_{nullptr}
-  , dying_{nullptr}
-  , powerup_{false}
-  , powerup_left_ticks_{0}
-  , powerup_on_{nullptr}
-  , powerup_off_{nullptr} {
+    : body_(game->renderer_, SNAKE_FILE), head_(game->renderer_, SNAKE_HEAD_FILE), game_{game}, direction_{Direction::RIGHT}, delay_{0}, rotate_{false}, eating_{nullptr}, dying_{nullptr}, powerup_{false}, powerup_left_ticks_{0}, powerup_on_{nullptr}, powerup_off_{nullptr} {
   eating_ = LoadSFX(SFX_EATING_FILE);
   dying_ = LoadSFX(SFX_DYING_FILE);
   powerup_on_ = LoadSFX(SFX_POWERUP_ON_FILE);
@@ -50,6 +39,8 @@ void Snake::Tick(Uint64 time) {
 #endif
 
   if ((delay_ += time) >= SPEED) {
+    delay_ -= SPEED;
+
     if (powerup_) {
       if (time > powerup_left_ticks_) {
         powerup_ = false;
@@ -62,50 +53,52 @@ void Snake::Tick(Uint64 time) {
       }
     }
 
-    delay_ -= SPEED;
+    for (Uint32 i = elements_.size() - 1; i > 0; --i) {
+      elements_[i] = elements_[i - 1];
+    }
 
-    Element n_pos{elements_[0]};
+    Element &head = elements_[0];
     switch (direction_) {
       case Direction::UP:
-        n_pos.y -= 1;
+        head.y -= 1;
         break;
       case Direction::RIGHT:
-        n_pos.x += 1;
+        head.x += 1;
         break;
       case Direction::LEFT:
-        n_pos.x -= 1;
+        head.x -= 1;
         break;
       case Direction::DOWN:
-        n_pos.y += 1;
+        head.y += 1;
         break;
     }
     rotate_ = false;
 
     //Interaction
-      if (n_pos.x < 0 || n_pos.x >= FIELD_SIZE_REL ||
-          n_pos.y < 0 || n_pos.y >= FIELD_SIZE_REL) {
+    if (head.x < 0 || head.x >= FIELD_SIZE_REL ||
+        head.y < 0 || head.y >= FIELD_SIZE_REL) {
 #ifdef _DEBUG
-        std::cout << fmt::format("Crossed border! Pos: {} | {}\n", n_pos.x, n_pos.y);
+      std::cout << fmt::format("Crossed border! Pos: {} | {}\n", head.x, head.y);
 #endif
-        if (!powerup_) {
-          Mix_PlayChannel(-1, dying_, 0);
-          game_->EndGame();
-          return;
-        } else {
-          if (n_pos.x < 0)
-            n_pos.x = FIELD_SIZE_REL - 1;
-          else if (n_pos.x >= FIELD_SIZE_REL)
-            n_pos.x = 0;
+      if (!powerup_) {
+        Mix_PlayChannel(-1, dying_, 0);
+        game_->EndGame();
+        return;
+      } else {
+        if (head.x < 0)
+          head.x = FIELD_SIZE_REL - 1;
+        else if (head.x >= FIELD_SIZE_REL)
+          head.x = 0;
 
-          if (n_pos.y < 0)
-            n_pos.y = FIELD_SIZE_REL - 1;
-          else if (n_pos.y >= FIELD_SIZE_REL)
-            n_pos.y = 0;
-        }
+        if (head.y < 0)
+          head.y = FIELD_SIZE_REL - 1;
+        else if (head.y >= FIELD_SIZE_REL)
+          head.y = 0;
       }
+    }
 
 
-    if (n_pos.x == game_->get_food_pos().x && n_pos.y == game_->get_food_pos().y) {
+    if (head.x == game_->get_food_pos().x && head.y == game_->get_food_pos().y) {
       IncreaseSize();
       game_->RegenFood();
       game_->RenderScore();
@@ -120,22 +113,24 @@ void Snake::Tick(Uint64 time) {
       }
     }
 
-    if (std::find(elements_.begin() + 1, elements_.end(), n_pos) != elements_.end()) {
+    bool found = false;
+    for (size_t i = 1; i < elements_.size(); ++i) {
+      if (elements_[i] == head) {
+        found = true;
+        break;
+      }
+    }
+    if (found) {
       Mix_PlayChannel(-1, dying_, 0);
       game_->EndGame();
       return;
     }
-    //Interaction
-
-    for (Uint32 i = elements_.size(); i > 0; --i) {
-      elements_[i] = elements_[i - 1];
-    }
-    elements_[0] = n_pos;
+    //~Interaction
   }
 }
 void Snake::Render() {
-  head_.RenderAt((int)elements_[0].x * TILE_SIZE, (int)elements_[0].y * TILE_SIZE);
   for (size_t i = 1; i < elements_.size(); ++i) {
-    body_.RenderAt((int)elements_[i].x * TILE_SIZE, (int)elements_[i].y * TILE_SIZE);
+    body_.RenderAt((int) elements_[i].x * TILE_SIZE, (int) elements_[i].y * TILE_SIZE);
   }
+  head_.RenderAt((int) elements_[0].x * TILE_SIZE, (int) elements_[0].y * TILE_SIZE);
 }
