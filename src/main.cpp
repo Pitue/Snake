@@ -14,6 +14,11 @@ int main(int argc, char **argv) {
             Mix_Quit();
           });
 
+  bool ai_controlled = false;
+  CLI::App app{"A Snake Clone with a AI"};
+  app.add_flag("--ai{true}", ai_controlled, "The game is controlled by a learning ai")->default_val(false);
+  CLI11_PARSE(app, argc, argv);
+
   if (SDL_Init(SDL_INIT_EVERYTHING)) {
     OnError(fmt::format("Error whilst initialising: \"{}\"", SDL_GetError()));
   }
@@ -24,7 +29,7 @@ int main(int argc, char **argv) {
     OnError(fmt::format("Error whilst initialising IMG: \"{}\"", IMG_GetError()));
   }
 
-  int flags = MIX_INIT_FLAC | MIX_INIT_MOD | MIX_INIT_MP3 | MIX_INIT_OGG;
+  int flags = MIX_INIT_MP3;
   if (Mix_Init(flags) != flags) {
     OnError(fmt::format("Error whilst initialising Mix: \"{}\"", Mix_GetError()));
   }
@@ -51,7 +56,7 @@ int main(int argc, char **argv) {
   SDL_SetWindowIcon(g_window, icon);
   SDL_FreeSurface(icon);
 
-  Game game(g_renderer);
+  Game game(g_renderer, ai_controlled);
   Uint64 ticks = SDL_GetTicks64();
 
   SDL_Event evt;

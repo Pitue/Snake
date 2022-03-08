@@ -13,6 +13,21 @@ enum class Direction : uint_fast8_t {
   LEFT,
   DOWN
 };
+struct Position {
+  int x, y;
+
+  Position(int x, int y)
+          : x{x}
+          , y{y} {
+
+  }
+
+  inline bool operator==(const Position& other) const {
+    return (x == other.x) && (y == other.y);
+  }
+};
+
+
 bool IsVertical(Direction d);
 bool IsHorizontal(Direction d);
 bool IsIncreasing(Direction d);
@@ -23,8 +38,8 @@ bool IsDecreasing(Direction d);
 #define TILE_SIZE 20
 #define BORDER_SIZE
 
-#define POWERUP_TIME (Uint64)500
-#define AS_SECONDS(x) ((double)(x) / 100.0)
+#define POWERUP_TIME (Uint64)5000
+#define AS_SECONDS(x) ((double)(x) / 1000.0)
 #define SPEED (Uint64)80
 
 #define FIELD_SIZE_REL 30
@@ -42,10 +57,6 @@ bool IsDecreasing(Direction d);
 #define SFX_POWERUP_OFF_FILE "./resource/powerup_off.mp3"
 
 #define ICON_FILE "./resource/icon.png"
-
-struct Position {
-  double x, y;
-};
 
 Mix_Chunk *LoadSFX(const char *file);
 

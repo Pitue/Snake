@@ -7,38 +7,31 @@
 
 #include "Texture.h"
 #include "misc.h"
+#include "Agent.h"
 
 class Game;
 
 class Snake {
-  struct Element {
-    int x, y;
-
-    Element(int x, int y)
-        : x{x}, y{y} {}
-
-    inline bool operator==(const Element &other) const {
-      return (x == other.x && y == other.y);
-    }
-  };
-
   Game *game_;
   Texture body_, head_;
   Direction direction_;
 
   Uint64 delay_;
   bool rotate_;
-  std::vector<Element> elements_;
+  std::vector<Position> snake_;
 
-  Mix_Chunk *dying_,
-            *eating_,
-            *powerup_on_,
-            *powerup_off_;
+  Mix_Chunk *sfx_dying_,
+            *sfx_eating_,
+            *sfx_powerup_on_,
+            *sfx_powerup_off_;
 
-  bool powerup_;
-  Uint64 powerup_left_ticks_;
+  bool powerup_,
+       ai_controlled_;
+  int_fast64_t powerup_ticks_left_;
 
-  void IncreaseSize();
+  Agent *agent_;
+
+  void Grow();
 
 public:
   explicit Snake(Game *game);
@@ -70,15 +63,15 @@ public:
     rotate_ = true;
   }
 
-  inline bool CheckPosition(SDL_Point pos) {
-    return std::find(elements_.begin(), elements_.end(), Element(pos.x, pos.y)) == elements_.end();
+  inline bool CheckPosition(Position pos) {
+    return std::find(snake_.begin(), snake_.end(), Position(pos.x, pos.y)) == snake_.end();
   }
 
   void Tick(size_t time);
   void Render();
 
   [[nodiscard]] Uint32 get_length() const {
-    return elements_.size();
+    return snake_.size();
   }
 };
 

@@ -10,7 +10,7 @@ if (WIN32)
         add_executable(Snake)
     endif()
 else()
-       add_executable(Snake)
+       add_executable(Snake src/Agent.cpp header/Agent.h)
 endif()
 
 
@@ -18,11 +18,13 @@ target_sources(
         ${PROJECT_NAME}
         PRIVATE
 
+        header/Agent.h
         header/Snake.h
         header/Texture.h
         header/misc.h
         header/Game.h
 
+        src/Agent.cpp
         src/main.cpp
         src/Snake.cpp
         src/Texture.cpp
@@ -47,7 +49,7 @@ target_precompile_headers(
 )
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-        add_compile_definitions(_DEBUG)
+        add_compile_definitions(_DEBUG AGENT_CONTROLLED)
 
 else()
 

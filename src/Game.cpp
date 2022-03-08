@@ -26,7 +26,7 @@ void Game::ToggleStop() {
   }
 }
 
-Game::Game(SDL_Renderer *renderer)
+Game::Game(SDL_Renderer *renderer, bool ai_controlled)
   : font_{TTF_OpenFont(FONT_FILE, 24)}
   , snake_{nullptr}
   , field_(renderer, FIELD_FILE)
@@ -39,7 +39,8 @@ Game::Game(SDL_Renderer *renderer)
   , game_over_{false}
   , highscore_{0}
   , powerup_{false}
-  , powerup_text_(renderer){
+  , powerup_text_(renderer)
+  , ai_controlled_{ai_controlled} {
   food_.set_center(0, 0);
   food_.set_size(TILE_SIZE, TILE_SIZE);
 
@@ -83,7 +84,7 @@ void Game::RenderScore() {
   score_.set_texture(&surf);
 }
 void Game::RegenFood() {
-  SDL_Point pos{0,0};
+  Position pos{0,0};
   do {
     pos.x = static_cast<int>(prng_() % FIELD_SIZE_REL);
     pos.y = static_cast<int>(prng_() % FIELD_SIZE_REL);
@@ -96,10 +97,6 @@ void Game::RenderPowerupText(Uint64 time_left) {
     TTF_SizeText(font_, "Powerup activated!", &max_size, nullptr);
     SDL_Surface *surf = TTF_RenderText_Blended_Wrapped(font_, fmt::format("Powerup activated!\nTime left: {}s", AS_SECONDS(time_left)).c_str(), font_color_, max_size);
     powerup_text_.set_texture(&surf);
-
-#ifdef _DEBUG
-    std::cout << "Called with " << time_left << " ticks\n";
-#endif
   } else {
     powerup_text_.set_texture((SDL_Texture*)nullptr);
   }
@@ -126,11 +123,12 @@ void Game::EndGame() {
   if (snake_->get_length() > highscore_)
     highscore_ = snake_->get_length();
 
-  set_powerup(false);
+  if (ai_controlled_)
+    Restart();
 }
 
 void Game::HandleEvent(SDL_Event *evt) {
-  if (!pause_ && !game_over_) {
+  if (!pause_ && !game_over_ && !ai_controlled_) {
     switch (evt->key.keysym.sym) {
       case SDLK_w:
         snake_->set_direction(Direction::UP);
