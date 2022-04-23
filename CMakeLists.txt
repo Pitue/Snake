@@ -10,7 +10,7 @@ if (WIN32)
         add_executable(Snake)
     endif()
 else()
-       add_executable(Snake src/Agent.cpp header/Agent.h)
+       add_executable(Snake)
 endif()
 
 
