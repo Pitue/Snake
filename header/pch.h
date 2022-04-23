@@ -20,9 +20,6 @@
 #include <SDL2/SDL_ttf.h>
 
 #include <fmt/format.h>
-#include <CLI/App.hpp>
-#include <CLI/Formatter.hpp>
-#include <CLI/Config.hpp>
 
 #ifdef _DEBUG
 #include <iostream>

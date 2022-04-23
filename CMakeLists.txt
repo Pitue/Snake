@@ -18,13 +18,11 @@ target_sources(
         ${PROJECT_NAME}
         PRIVATE
 
-        header/Agent.h
         header/Snake.h
         header/Texture.h
         header/misc.h
         header/Game.h
 
-        src/Agent.cpp
         src/main.cpp
         src/Snake.cpp
         src/Texture.cpp
@@ -47,14 +45,6 @@ target_precompile_headers(
 
         ./header/pch.h
 )
-
-if(CMAKE_BUILD_TYPE MATCHES Debug)
-        add_compile_definitions(_DEBUG AGENT_CONTROLLED)
-
-else()
-
-
-endif()
 
 find_package(SDL2 CONFIG REQUIRED)
 find_package(sdl2-ttf CONFIG REQUIRED)

@@ -26,7 +26,7 @@ void Game::ToggleStop() {
   }
 }
 
-Game::Game(SDL_Renderer *renderer, bool ai_controlled)
+Game::Game(SDL_Renderer *renderer)
   : font_{TTF_OpenFont(FONT_FILE, 24)}
   , snake_{nullptr}
   , field_(renderer, FIELD_FILE)
@@ -39,8 +39,7 @@ Game::Game(SDL_Renderer *renderer, bool ai_controlled)
   , game_over_{false}
   , highscore_{0}
   , powerup_{false}
-  , powerup_text_(renderer)
-  , ai_controlled_{ai_controlled} {
+  , powerup_text_(renderer) {
   food_.set_center(0, 0);
   food_.set_size(TILE_SIZE, TILE_SIZE);
 
@@ -64,7 +63,6 @@ Game::Game(SDL_Renderer *renderer, bool ai_controlled)
 
     filestream_.close();
   }
-
   Restart();
 }
 Game::~Game() {
@@ -122,13 +120,10 @@ void Game::EndGame() {
 
   if (snake_->get_length() > highscore_)
     highscore_ = snake_->get_length();
-
-  if (ai_controlled_)
-    Restart();
 }
 
 void Game::HandleEvent(SDL_Event *evt) {
-  if (!pause_ && !game_over_ && !ai_controlled_) {
+  if (!pause_ && !game_over_) {
     switch (evt->key.keysym.sym) {
       case SDLK_w:
         snake_->set_direction(Direction::UP);
@@ -172,13 +167,13 @@ void Game::Tick(Uint64 ms) {
 }
 
 void Game::Render() {
-  field_.Render();
+  field_.RenderAt(BORDER_SIZE_X, BORDER_SIZE_Y);
 
-  food_.RenderAt(food_pos.x * TILE_SIZE, food_pos.y * TILE_SIZE);
+  food_.RenderAt(food_pos.x * TILE_SIZE + BORDER_SIZE_X, food_pos.y * TILE_SIZE + BORDER_SIZE_Y);
   snake_->Render();
 
   if (!game_over_)
-    score_.Render();
+    score_.RenderAt(0, 0);
   else
     score_.RenderAt(WINDOW_SIZE_X / 2 - score_.get_size().x, WINDOW_SIZE_Y / 2 - score_.get_size().y);
 

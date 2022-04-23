@@ -20,9 +20,7 @@ Snake::Snake(Game *game)
     , powerup_{false}
     , powerup_ticks_left_{0}
     , sfx_powerup_on_{nullptr}
-    , sfx_powerup_off_{nullptr}
-    , agent_{nullptr}
-    , ai_controlled_{game_->get_ai_controlled()} {
+    , sfx_powerup_off_{nullptr} {
   sfx_eating_ = LoadSFX(SFX_EATING_FILE);
   sfx_dying_ = LoadSFX(SFX_DYING_FILE);
   sfx_powerup_on_ = LoadSFX(SFX_POWERUP_ON_FILE);
@@ -38,14 +36,10 @@ Snake::Snake(Game *game)
   snake_.emplace_back(3, 5);
   Grow();
   Grow();
-
-  if (ai_controlled_)
-    agent_ = new Agent(this, game_);
 }
 Snake::~Snake() {
   Mix_FreeChunk(sfx_eating_);
   Mix_FreeChunk(sfx_dying_);
-  delete agent_;
 }
 
 void Snake::Tick(Uint64 time) {
@@ -62,10 +56,6 @@ void Snake::Tick(Uint64 time) {
       } else {
         game_->RenderPowerupText(powerup_ticks_left_);
       }
-    }
-
-    if (ai_controlled_) {
-      set_direction(agent_->Calc(State{}));
     }
 
     for (Uint32 i = snake_.size() - 1; i > 0; --i) {
@@ -119,7 +109,7 @@ void Snake::Tick(Uint64 time) {
       game_->RegenFood();
       game_->RenderScore();
 
-      if (game_->get_random_number() % 100 < 15) {
+      if (game_->get_random_number() % 100 < 15 && !powerup_) {
         powerup_ = true;
         powerup_ticks_left_ = POWERUP_TIME;
         game_->set_powerup(true);
@@ -127,12 +117,6 @@ void Snake::Tick(Uint64 time) {
       } else {
         Mix_PlayChannel(-1, sfx_eating_, 0);
       }
-
-      if (game_->get_ai_controlled()) {
-        agent_->Reward(100);
-      }
-    } else if (ai_controlled_) {
-      agent_->Reward(-1);
     }
 
 
@@ -142,7 +126,8 @@ void Snake::Tick(Uint64 time) {
 }
 void Snake::Render() {
   for (size_t i = 1; i < snake_.size(); ++i) {
-    body_.RenderAt((int) snake_[i].x * TILE_SIZE, (int) snake_[i].y * TILE_SIZE);
+    body_.RenderAt((int) snake_[i].x * TILE_SIZE + BORDER_SIZE_X, (int) snake_[i].y * TILE_SIZE + BORDER_SIZE_Y);
   }
-  head_.RenderAt((int) snake_[0].x * TILE_SIZE, (int) snake_[0].y * TILE_SIZE);
+  if (!game_->get_gameover())
+    head_.RenderAt((int) snake_[0].x * TILE_SIZE + BORDER_SIZE_X, (int) snake_[0].y * TILE_SIZE + BORDER_SIZE_Y);
 }

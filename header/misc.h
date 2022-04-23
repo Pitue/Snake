@@ -33,16 +33,21 @@ bool IsHorizontal(Direction d);
 bool IsIncreasing(Direction d);
 bool IsDecreasing(Direction d);
 
-#define WINDOW_SIZE_X 600
-#define WINDOW_SIZE_Y WINDOW_SIZE_X
-#define TILE_SIZE 20
-#define BORDER_SIZE
+#define FIELD_SIZE 900
+#define FIELD_SIZE_REL 30
+#define TILE_SIZE (FIELD_SIZE / FIELD_SIZE_REL)
+
+#define WINDOW_SIZE_X 1600
+#define WINDOW_SIZE_Y 900
+
+#define BORDER_SIZE_X ((WINDOW_SIZE_X - FIELD_SIZE) / 2)
+#define BORDER_SIZE_Y ((WINDOW_SIZE_Y - FIELD_SIZE) / 2)
+
+#define FIELD_BORDER_WIDTH 5
 
 #define POWERUP_TIME (Uint64)5000
 #define AS_SECONDS(x) ((double)(x) / 1000.0)
-#define SPEED (Uint64)80
-
-#define FIELD_SIZE_REL 30
+#define SPEED (Uint64)100
 
 #define FONT_FILE "./resource/arial.ttf"
 

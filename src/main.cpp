@@ -14,11 +14,6 @@ int main(int argc, char **argv) {
             Mix_Quit();
           });
 
-  bool ai_controlled = false;
-  CLI::App app{"A Snake Clone with a AI"};
-  app.add_flag("--ai{true}", ai_controlled, "The game is controlled by a learning ai")->default_val(false);
-  CLI11_PARSE(app, argc, argv);
-
   if (SDL_Init(SDL_INIT_EVERYTHING)) {
     OnError(fmt::format("Error whilst initialising: \"{}\"", SDL_GetError()));
   }
@@ -45,7 +40,7 @@ int main(int argc, char **argv) {
   }
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
   SDL_SetRenderDrawBlendMode(g_renderer, SDL_BlendMode::SDL_BLENDMODE_BLEND);
-  SDL_SetRenderDrawColor(g_renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+  SDL_SetRenderDrawColor(g_renderer, 186, 186, 186, SDL_ALPHA_OPAQUE);
   SDL_RenderSetLogicalSize(g_renderer, WINDOW_SIZE_X, WINDOW_SIZE_Y);
 
   SDL_Surface *icon = IMG_Load(ICON_FILE);
@@ -56,7 +51,7 @@ int main(int argc, char **argv) {
   SDL_SetWindowIcon(g_window, icon);
   SDL_FreeSurface(icon);
 
-  Game game(g_renderer, ai_controlled);
+  Game game(g_renderer);
   Uint64 ticks = SDL_GetTicks64();
 
   SDL_Event evt;
@@ -75,6 +70,10 @@ int main(int argc, char **argv) {
             do {
               SDL_WaitEvent(&evt);
             } while (evt.type != SDL_WINDOWEVENT || evt.window.event != SDL_WINDOWEVENT_RESTORED);
+            break;
+
+          case SDL_WINDOWEVENT_RESIZED:
+            ticks = SDL_GetTicks64();
             break;
         }
       } else if (evt.type == SDL_KEYDOWN) {

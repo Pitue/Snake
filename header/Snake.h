@@ -7,7 +7,6 @@
 
 #include "Texture.h"
 #include "misc.h"
-#include "Agent.h"
 
 class Game;
 
@@ -25,11 +24,8 @@ class Snake {
             *sfx_powerup_on_,
             *sfx_powerup_off_;
 
-  bool powerup_,
-       ai_controlled_;
+  bool powerup_;
   int_fast64_t powerup_ticks_left_;
-
-  Agent *agent_;
 
   void Grow();
 

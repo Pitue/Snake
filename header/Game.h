@@ -22,8 +22,7 @@ class Game {
           powerup_text_;
   Position food_pos;
   bool pause_,
-       game_over_,
-       ai_controlled_;
+       game_over_;
 
   Uint32 highscore_;
   std::fstream filestream_;
@@ -35,17 +34,17 @@ class Game {
 public:
   SDL_Renderer *renderer_;
 
-  explicit Game(SDL_Renderer *renderer, bool ai_controlled);
+  explicit Game(SDL_Renderer *renderer);
   ~Game();
 
-  [[nodiscard]] inline Position get_food_pos() {
+  [[nodiscard]] inline Position get_food_pos() const {
     return food_pos;
   }
   [[nodiscard]] inline std::mt19937::result_type get_random_number() {
     return prng_();
   }
-  [[nodiscard]] inline bool get_ai_controlled() const {
-    return ai_controlled_;
+  [[nodiscard]] inline bool get_gameover() const {
+    return game_over_;
   }
 
   void RenderScore();
