@@ -19,6 +19,7 @@ Snake::Snake(Game *game)
     , sfx_dying_{nullptr}
     , powerup_{false}
     , powerup_ticks_left_{0}
+	  , powerup_cooldown_{0}
     , sfx_powerup_on_{nullptr}
     , sfx_powerup_off_{nullptr} {
   sfx_eating_ = LoadSFX(SFX_EATING_FILE);
@@ -43,20 +44,20 @@ Snake::~Snake() {
 }
 
 void Snake::Tick(Uint64 time) {
+  if (powerup_) {
+    powerup_ticks_left_ -= time;
+
+    if (powerup_ticks_left_ <= 0) {
+      powerup_ = false;
+      game_->set_powerup(false);
+      Mix_PlayChannel(-1, sfx_powerup_off_, 0);
+    } else {
+      game_->RenderPowerupText(powerup_ticks_left_);
+    }
+  }
+
   if ((delay_ += time) >= SPEED) {
     delay_ -= SPEED;
-
-    if (powerup_) {
-      powerup_ticks_left_ -= SPEED + delay_;
-
-      if (powerup_ticks_left_ <= 0) {
-        powerup_ = false;
-        game_->set_powerup(false);
-        Mix_PlayChannel(-1, sfx_powerup_off_, 0);
-      } else {
-        game_->RenderPowerupText(powerup_ticks_left_);
-      }
-    }
 
     for (Uint32 i = snake_.size() - 1; i > 0; --i) {
       snake_[i] = snake_[i - 1];
@@ -109,14 +110,17 @@ void Snake::Tick(Uint64 time) {
       game_->RegenFood();
       game_->RenderScore();
 
-      if (game_->get_random_number() % 100 < 15 && !powerup_) {
+      if (game_->get_random_number() % 100 < 150 && !powerup_ && powerup_cooldown_ == 0) {
         powerup_ = true;
+        powerup_cooldown_ = 5;
         powerup_ticks_left_ = POWERUP_TIME;
         game_->set_powerup(true);
         Mix_PlayChannel(-1, sfx_powerup_on_, 0);
       } else {
         Mix_PlayChannel(-1, sfx_eating_, 0);
-      }
+        if (powerup_cooldown_ > 0 && !powerup_)
+          --powerup_cooldown_;
+      } 
     }
 
 

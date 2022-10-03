@@ -26,6 +26,7 @@ class Snake {
 
   bool powerup_;
   int_fast64_t powerup_ticks_left_;
+  uint_fast8_t powerup_cooldown_;
 
   void Grow();
 

@@ -94,6 +94,8 @@ int main(int argc, char **argv) {
         }
       }
     }
+    if (!running)
+      break;
 
     Uint64 n = SDL_GetTicks64();
     game.Tick(n - ticks);
